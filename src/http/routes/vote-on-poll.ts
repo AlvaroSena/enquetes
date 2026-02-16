@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { db } from "../../db";
-import { polls, pollOptions } from "../../db/schema";
+import { votes } from "../../db/schema";
+import { and, eq } from "drizzle-orm";
 
 const voteOnPoll = Router();
 
@@ -19,9 +21,37 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
     const { pollId } = voteOnPollParams.parse(request.params);
     const { pollOptionId } = voteOnPollBody.parse(request.body);
    
-    
+    let { sessionId } = request.signedCookies;
 
-  } catch {}
+    if (sessionId) {
+      const [userVotedPreviouslyInThePoll] = await db
+        .select().from(votes)
+        .where(and(eq(votes.sessionId, sessionId), eq(votes.pollId, pollId)));
+      
+      if (userVotedPreviouslyInThePoll && userVotedPreviouslyInThePoll.pollOptionId === pollOptionId) {
+        return response.status(409).json({ message: "User already has voted in this poll." });
+      }
+
+      await db.delete(votes).where(eq(votes.id, userVotedPreviouslyInThePoll.id));
+    }
+
+    if (!sessionId) {
+      sessionId = randomUUID();
+
+      response.cookie("sessionId", sessionId, {
+        path: '/',
+        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+        signed: true,
+        httpOnly: true,
+      });
+    }
+
+    await db.insert(votes).values({ sessionId, pollId, pollOptionId });
+
+    return response.status(201).send();
+  } catch {
+    return response.status(500).send("Internal server error")
+  }
 });
 
 export { voteOnPoll }

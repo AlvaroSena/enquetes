@@ -1,21 +1,35 @@
 import { Router } from "express";
 import { z } from "zod";
 import { db } from "../../db";
-import { polls } from "../../db/schema";
+import { polls, pollOptions } from "../../db/schema";
 
 const createPoll = Router();
 
 createPoll.post("/polls", async (request, response) => {
   const createPollBody = z.object({
     title: z.string(),
+    options: z.array(z.string()),
   });
 
   try {
-    const { title } = createPollBody.parse(request.body);
+    const { title, options } = createPollBody.parse(request.body);
 
-    const [poll] = await db.insert(polls).values({ title }).returning();
+    const pollId = await db.transaction(async tx => {
+      const [poll] = await tx.insert(polls).values({ title }).returning();
+        
+      const formattedOptions = options.map(value => {
+        return {
+          title: value,
+          pollId: poll.id,
+        }
+      })
 
-    return response.status(201).json({ pollId: poll.id });
+      await tx.insert(pollOptions).values(formattedOptions);
+
+      return poll.id
+    });
+
+    return response.status(201).json({ pollId })
 
   } catch {}
 });

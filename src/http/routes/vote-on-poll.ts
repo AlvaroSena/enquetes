@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "../../db";
 import { votes } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
+import { redis } from "../../lib/redis";
 
 const voteOnPoll = Router();
 
@@ -33,6 +34,8 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
       }
 
       await db.delete(votes).where(eq(votes.id, userVotedPreviouslyInThePoll.id));
+
+      await redis.zincrby(pollId, -1, userVotedPreviouslyInThePoll.pollOptionId);
     }
 
     if (!sessionId) {
@@ -47,6 +50,8 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
     }
 
     await db.insert(votes).values({ sessionId, pollId, pollOptionId });
+
+    await redis.zincrby(pollId, 1, pollOptionId);
 
     return response.status(201).send();
   } catch {

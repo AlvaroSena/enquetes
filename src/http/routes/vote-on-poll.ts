@@ -5,6 +5,7 @@ import { db } from "../../db";
 import { votes } from "../../db/schema";
 import { and, eq } from "drizzle-orm";
 import { redis } from "../../lib/redis";
+import { voting } from "../../utils/voting-pub-sub";
 
 const voteOnPoll = Router();
 
@@ -35,7 +36,12 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
 
       await db.delete(votes).where(eq(votes.id, userVotedPreviouslyInThePoll.id));
 
-      await redis.zincrby(pollId, -1, userVotedPreviouslyInThePoll.pollOptionId);
+      const currentlyVotesAmount = await redis.zincrby(pollId, -1, userVotedPreviouslyInThePoll.pollOptionId);
+
+      voting.publish(pollId, { 
+        pollOptionId: userVotedPreviouslyInThePoll.pollId,
+        votes: Number(currentlyVotesAmount),
+      });
     }
 
     if (!sessionId) {
@@ -51,7 +57,12 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
 
     await db.insert(votes).values({ sessionId, pollId, pollOptionId });
 
-    await redis.zincrby(pollId, 1, pollOptionId);
+    const currentlyVotesAmount = await redis.zincrby(pollId, 1, pollOptionId);
+
+    voting.publish(pollId, { 
+      pollOptionId,
+      votes: Number(currentlyVotesAmount),
+    });
 
     return response.status(201).send();
   } catch {

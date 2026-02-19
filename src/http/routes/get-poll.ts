@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "../../db";
-import { polls, pollOptions } from "../../db/schema";
+import { db } from "../../infra/database";
+import { polls, pollOptions } from "../../infra/database/schema";
 import { eq, sql } from "drizzle-orm";
-import { redis } from "../../lib/redis";
+import { redis } from "../../infra/redis";
 
 type PollOption = {
   id: string;

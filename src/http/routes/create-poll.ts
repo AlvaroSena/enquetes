@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { db } from "../../db";
-import { polls, pollOptions } from "../../db/schema";
+import { db } from "../../infra/database";
+import { polls, pollOptions } from "../../infra/database/schema";
 
 const createPoll = Router();
 

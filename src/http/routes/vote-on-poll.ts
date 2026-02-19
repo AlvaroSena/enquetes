@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { db } from "../../db";
-import { votes } from "../../db/schema";
+import { db } from "../../infra/database";
+import { votes } from "../../infra/database/schema";
 import { and, eq } from "drizzle-orm";
-import { redis } from "../../lib/redis";
+import { redis } from "../../infra/redis";
 import { voting } from "../../utils/voting-pub-sub";
 
 const voteOnPoll = Router();

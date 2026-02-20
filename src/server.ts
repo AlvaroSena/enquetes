@@ -3,9 +3,9 @@ import http from "http";
 import cookieParser from 'cookie-parser'
 import { Server } from "socket.io";
 
-import { createPoll } from "./http/routes/create-poll";
-import { getPoll } from "./http/routes/get-poll";
-import { voteOnPoll } from "./http/routes/vote-on-poll";
+import { createPoll } from "./infra/http/routes/create-poll";
+import { getPoll } from "./infra/http/routes/get-poll";
+import { voteOnPoll } from "./infra/http/routes/vote-on-poll";
 
 const app = express();
 app.use(express.json());

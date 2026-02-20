@@ -1,5 +1,3 @@
-import { db } from '..'
+import { db } from "..";
 
-export type DrizzleTransaction = Parameters<
-  Parameters<typeof db.transaction>[0]
->[0]
+export type DrizzleTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];

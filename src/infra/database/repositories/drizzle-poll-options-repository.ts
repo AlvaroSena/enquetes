@@ -6,13 +6,13 @@ import { DrizzleTransaction } from "../types/drizzle-types";
 
 export class DrizzlePollOptionsRepository implements PollOptionsRepository {
   async createMany(options: PollOption[], trx?: DrizzleTransaction): Promise<void> {
-    const executor = trx ?? db
+    const executor = trx ?? db;
 
-    const formattedOptions = options.map(option => {
+    const formattedOptions = options.map((option) => {
       return {
         title: option.title,
         pollId: option.pollId.toString(),
-      }
+      };
     });
 
     await executor.insert(pollOptions).values(formattedOptions);

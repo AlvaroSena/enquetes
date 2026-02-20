@@ -8,7 +8,7 @@ import { redis } from "../../../infra/redis";
 type PollOption = {
   id: string;
   title: string;
-}
+};
 
 type PollQueryResult = {
   id: string;
@@ -16,7 +16,7 @@ type PollQueryResult = {
   createdAt: Date;
   updatedAt: Date;
   options: PollOption[];
-}
+};
 
 const getPoll = Router();
 
@@ -59,30 +59,35 @@ getPoll.get("/polls/:pollId", async (request, response) => {
 
     const result = await redis.zrange(pollId, 0, -1, "WITHSCORES");
 
-    const votes = result.reduce((obj, line, index) => {
-      if (index % 2 === 0) {
-        const score = result[index + 1];
+    const votes = result.reduce(
+      (obj, line, index) => {
+        if (index % 2 === 0) {
+          const score = result[index + 1];
 
-        Object.assign(obj, { [line]: Number(score) });
-      }
+          Object.assign(obj, { [line]: Number(score) });
+        }
 
-      return obj;
-    }, {} as Record<string, number>);
+        return obj;
+      },
+      {} as Record<string, number>,
+    );
 
     return response.json({
       poll: {
         id: poll.id,
         title: poll.title,
-        options: poll.options.map(option => {
+        options: poll.options.map((option) => {
           return {
             id: option.id,
             title: option.title,
-            score: (option.id in votes) ? votes[option.id] : 0,
-          }
+            score: option.id in votes ? votes[option.id] : 0,
+          };
         }),
-      }
+      },
     });
-  } catch {}
+  } catch (err) {
+    console.log(err);
+  }
 });
 
-export { getPoll }
+export { getPoll };

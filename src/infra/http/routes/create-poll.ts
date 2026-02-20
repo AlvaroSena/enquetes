@@ -24,11 +24,10 @@ createPoll.post("/polls", async (request, response) => {
 
     const { pollId } = await createPollUseCase.execute({ title, options });
 
-    return response.status(201).json({ pollId: pollId.toString() })
-
+    return response.status(201).json({ pollId: pollId.toString() });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 });
 
-export { createPoll }
+export { createPoll };

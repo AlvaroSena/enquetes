@@ -11,8 +11,8 @@ interface CreatePollUseCaseRequest {
 
 export class CreatePollUseCase {
   constructor(
-    private pollsRepository: PollsRepository, 
-    private pollOptionsRepository: PollOptionsRepository, 
+    private pollsRepository: PollsRepository,
+    private pollOptionsRepository: PollOptionsRepository,
     private unitOfWork: UnitOfWork,
   ) {}
 
@@ -22,12 +22,12 @@ export class CreatePollUseCase {
 
       const poll = await this.pollsRepository.create(newPoll, trx);
 
-      const formattedOptions = options.map(value => {
+      const formattedOptions = options.map((value) => {
         return PollOption.create({
           title: value,
           pollId: poll.id,
-        })
-      })
+        });
+      });
 
       await this.pollOptionsRepository.createMany(formattedOptions, trx);
 
@@ -36,6 +36,6 @@ export class CreatePollUseCase {
 
     return {
       pollId,
-    }
+    };
   }
 }

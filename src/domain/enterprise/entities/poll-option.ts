@@ -16,7 +16,7 @@ export class PollOption extends Entity<PollOptionProps> {
   }
 
   static create(props: PollOptionProps, id?: UniqueEntityId) {
-    const pollOption = new PollOption(props, id); 
+    const pollOption = new PollOption(props, id);
 
     return pollOption;
   }

@@ -9,15 +9,12 @@ export class DrizzlePollsRepository implements PollsRepository {
   async create(poll: Poll, trx?: DrizzleTransaction): Promise<Poll> {
     const executor = trx ?? db;
 
-    const [newPoll] = await executor
-    .insert(polls)
-    .values({ title: poll.title })
-    .returning(); 
+    const [newPoll] = await executor.insert(polls).values({ title: poll.title }).returning();
 
     return Poll.create(
       {
-        title: newPoll.title, 
-        createdAt: newPoll.createdAt, 
+        title: newPoll.title,
+        createdAt: newPoll.createdAt,
         updatedAt: newPoll.updatedAt,
       },
       new UniqueEntityId(newPoll.id),

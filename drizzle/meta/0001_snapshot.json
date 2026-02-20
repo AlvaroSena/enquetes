@@ -34,12 +34,8 @@
           "name": "poll_options_poll_id_polls_id_fk",
           "tableFrom": "poll_options",
           "tableTo": "polls",
-          "columnsFrom": [
-            "poll_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["poll_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -165,12 +161,8 @@
           "name": "votes_poll_option_id_poll_options_id_fk",
           "tableFrom": "votes",
           "tableTo": "poll_options",
-          "columnsFrom": [
-            "poll_option_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["poll_option_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -178,12 +170,8 @@
           "name": "votes_poll_id_polls_id_fk",
           "tableFrom": "votes",
           "tableTo": "polls",
-          "columnsFrom": [
-            "poll_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["poll_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

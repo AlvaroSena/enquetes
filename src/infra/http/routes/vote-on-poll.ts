@@ -10,7 +10,7 @@ import { voting } from "../../../utils/voting-pub-sub";
 const voteOnPoll = Router();
 
 voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
- const voteOnPollParams = z.object({
+  const voteOnPollParams = z.object({
     pollId: z.uuid(),
   });
 
@@ -19,17 +19,17 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
   });
 
   try {
-
     const { pollId } = voteOnPollParams.parse(request.params);
     const { pollOptionId } = voteOnPollBody.parse(request.body);
-   
+
     let { sessionId } = request.signedCookies;
 
     if (sessionId) {
       const [userVotedPreviouslyInThePoll] = await db
-        .select().from(votes)
+        .select()
+        .from(votes)
         .where(and(eq(votes.sessionId, sessionId), eq(votes.pollId, pollId)));
-      
+
       if (userVotedPreviouslyInThePoll && userVotedPreviouslyInThePoll.pollOptionId === pollOptionId) {
         return response.status(409).json({ message: "User already has voted in this poll." });
       }
@@ -38,7 +38,7 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
 
       const currentlyVotesAmount = await redis.zincrby(pollId, -1, userVotedPreviouslyInThePoll.pollOptionId);
 
-      voting.publish(pollId, { 
+      voting.publish(pollId, {
         pollOptionId: userVotedPreviouslyInThePoll.pollId,
         votes: Number(currentlyVotesAmount),
       });
@@ -48,7 +48,7 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
       sessionId = randomUUID();
 
       response.cookie("sessionId", sessionId, {
-        path: '/',
+        path: "/",
         maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
         signed: true,
         httpOnly: true,
@@ -59,15 +59,15 @@ voteOnPoll.post("/polls/:pollId/votes", async (request, response) => {
 
     const currentlyVotesAmount = await redis.zincrby(pollId, 1, pollOptionId);
 
-    voting.publish(pollId, { 
+    voting.publish(pollId, {
       pollOptionId,
       votes: Number(currentlyVotesAmount),
     });
 
     return response.status(201).send();
   } catch {
-    return response.status(500).send("Internal server error")
+    return response.status(500).send("Internal server error");
   }
 });
 
-export { voteOnPoll }
+export { voteOnPoll };

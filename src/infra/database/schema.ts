@@ -17,22 +17,29 @@ export const pollsRelations = relations(polls, ({ many }) => ({
 export const pollOptions = pgTable("poll_options", {
   id: uuid().defaultRandom().primaryKey(),
   title: text().notNull(),
-  pollId: uuid().notNull().references(() => polls.id, { onDelete: "cascade" }),
+  pollId: uuid()
+    .notNull()
+    .references(() => polls.id, { onDelete: "cascade" }),
 });
 
 export const pollOptionsRelations = relations(pollOptions, ({ many }) => ({
   votes: many(votes),
 }));
 
-export const votes = pgTable("votes", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  sessionId: text().notNull(),
-  pollOptionId: uuid().notNull().references(() => pollOptions.id, { onDelete: "cascade" }),
-  pollId: uuid().notNull().references(() => polls.id, { onDelete: "cascade" }),
-  createdAt: timestamp().defaultNow().notNull(),
-}, (table) => ({
-  voteSessionUnique: uniqueIndex("polls_vote_session_unique").on(
-    table.sessionId,
-    table.pollId,
-  ),
-}));
+export const votes = pgTable(
+  "votes",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    sessionId: text().notNull(),
+    pollOptionId: uuid()
+      .notNull()
+      .references(() => pollOptions.id, { onDelete: "cascade" }),
+    pollId: uuid()
+      .notNull()
+      .references(() => polls.id, { onDelete: "cascade" }),
+    createdAt: timestamp().defaultNow().notNull(),
+  },
+  (table) => ({
+    voteSessionUnique: uniqueIndex("polls_vote_session_unique").on(table.sessionId, table.pollId),
+  }),
+);

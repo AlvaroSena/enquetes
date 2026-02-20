@@ -27,10 +27,13 @@ export class Vote extends Entity<VoteProps> {
   }
 
   static create(props: Optional<VoteProps, "createdAt">, id?: UniqueEntityId) {
-    const vote = new Vote({
-      ...props,
-      createdAt: new Date(),
-    }, id); 
+    const vote = new Vote(
+      {
+        ...props,
+        createdAt: new Date(),
+      },
+      id,
+    );
 
     return vote;
   }

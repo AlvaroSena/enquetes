@@ -31,10 +31,13 @@ export class Poll extends Entity<PollProps> {
   }
 
   static create(props: Optional<PollProps, "createdAt">, id?: UniqueEntityId) {
-    const poll = new Poll({
-      ...props,
-      createdAt: new Date(),
-    }, id); 
+    const poll = new Poll(
+      {
+        ...props,
+        createdAt: new Date(),
+      },
+      id,
+    );
 
     return poll;
   }

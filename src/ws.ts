@@ -1,7 +1,7 @@
 import { io } from "./server";
 import { voting } from "./utils/voting-pub-sub";
 
-io.on("connection", socket => {
+io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("pollId", (pollId: string) => {

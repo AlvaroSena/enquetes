@@ -1,5 +1,5 @@
-import { io } from "./server";
-import { voting } from "./utils/voting-pub-sub";
+import { io } from "../http/server";
+import { voting } from "../../utils/voting-pub-sub";
 
 io.on("connection", (socket) => {
   console.log(socket.id);
